@@ -1,4 +1,4 @@
-package org.example.entity;
+package epicode.it.entity;
 
 public class Rivista extends Stampa {
     private Periodicita periodicita;

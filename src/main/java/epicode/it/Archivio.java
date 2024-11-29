@@ -1,10 +1,10 @@
-package org.example;
+package epicode.it;
 
-import org.example.entity.Libro;
-import org.example.entity.Rivista;
-import org.example.entity.Stampa;
-import org.example.exceptions.DuplicatedIsbnException;
-import org.example.exceptions.StampaNonTrovataException;
+import epicode.it.entity.Libro;
+import epicode.it.entity.Rivista;
+import epicode.it.entity.Stampa;
+import epicode.it.exception.DuplicatedIsbnException;
+import epicode.it.exception.StampaNonTrovataException;
 
 import java.util.*;
 
@@ -143,21 +143,61 @@ public class Archivio {
         }
     }
 
-    private static void aggiornaStampa(Scanner scanner, List<Stampa> archivio) {
+    private static void aggiornaStampa(Scanner scanner, List<Stampa> archivio) throws StampaNonTrovataException, IllegalArgumentException {
         System.out.print("Inserisci l'ISBN della stampa da aggiornare: ");
         String isbn = scanner.nextLine();
-        try {
-            Stampa nuovaStampa = creaStampa(scanner);
-            Stampa stampaEsistente = archivio.stream()
-                    .filter(item -> item.getIsbn().equals(isbn))
-                    .findFirst()
-                    .orElseThrow(() -> new StampaNonTrovataException("Nessuna stampa trovata con ISBN: " + isbn));
-            archivio.remove(stampaEsistente);
-            archivio.add(nuovaStampa);
-            System.out.println("Stampa aggiornata con successo: " + nuovaStampa);
-        } catch (StampaNonTrovataException | IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+
+        Stampa stampaEsistente = archivio.stream()
+                .filter(item -> item.getIsbn().equals(isbn))
+                .findFirst()
+                .orElseThrow(() -> new StampaNonTrovataException("Nessuna stampa trovata con ISBN: " + isbn));
+
+        System.out.println("Stampa trovata: " + stampaEsistente);
+        System.out.println("Aggiorna i campi (lascia vuoto per mantenere il valore attuale):");
+
+        System.out.print("Inserisci nuovo titolo: ");
+        String nuovoTitolo = scanner.nextLine();
+        if (!nuovoTitolo.isEmpty()) {
+            stampaEsistente.setTitolo(nuovoTitolo);
         }
+
+        System.out.print("Inserisci nuovo anno di pubblicazione: ");
+        String nuovoAnno = scanner.nextLine();
+        if (!nuovoAnno.isEmpty()) {
+            stampaEsistente.setAnnoPublicazione(Integer.parseInt(nuovoAnno));
+        }
+
+        System.out.print("Inserisci nuovo numero di pagine: ");
+        String nuovoNumeroPagine = scanner.nextLine();
+        if (!nuovoNumeroPagine.isEmpty()) {
+            stampaEsistente.setNumeroPagine(Integer.parseInt(nuovoNumeroPagine));
+        }
+
+        if (stampaEsistente instanceof Libro) {
+            Libro libro = (Libro) stampaEsistente;
+
+            System.out.print("Inserisci nuovo autore: ");
+            String nuovoAutore = scanner.nextLine();
+            if (!nuovoAutore.isEmpty()) {
+                libro.setAutore(nuovoAutore);
+            }
+
+            System.out.print("Inserisci nuovo genere: ");
+            String nuovoGenere = scanner.nextLine();
+            if (!nuovoGenere.isEmpty()) {
+                libro.setGenere(nuovoGenere);
+            }
+        } else if (stampaEsistente instanceof Rivista) {
+            Rivista rivista = (Rivista) stampaEsistente;
+
+            System.out.print("Inserisci nuova periodicità (SETTIMANALE, MENSILE, SEMESTRALE): ");
+            String nuovaPeriodicita = scanner.nextLine();
+            if (!nuovaPeriodicita.isEmpty()) {
+                rivista.setPeriodicita(Rivista.Periodicita.valueOf(nuovaPeriodicita.toUpperCase()));
+            }
+        }
+
+        System.out.println("Stampa aggiornata con successo: " + stampaEsistente);
     }
 
     private static void visualizzaStatisticheCatalogo(List<Stampa> archivio) {

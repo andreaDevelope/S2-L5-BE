@@ -1,4 +1,4 @@
-package org.example.entity;
+package epicode.it.entity;
 
 public abstract class Stampa {
     private String isbn;

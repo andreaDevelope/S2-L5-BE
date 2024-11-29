@@ -1,4 +1,4 @@
-package org.example.entity;
+package epicode.it.entity;
 
 public class Libro extends Stampa{
     private String autore;
